@@ -228,23 +228,69 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                        enableAutoExposure:(BOOL)enableAutoExposure
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
+  NSLog(@"###: init with camera name...");
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   @try {
     _resolutionPreset = getResolutionPresetForString(resolutionPreset);
+      NSLog(@"###: get resolution preset without exceptions...");
   } @catch (NSError *e) {
+      NSLog(@"###: exception in getting resolution preset: %@...",e.userInfo);
     *error = e;
   }
   _enableAudio = enableAudio;
+    NSLog(@"###: getting enable audio succefully...");
   _dispatchQueue = dispatchQueue;
+    NSLog(@"###: dispatch queue...");
   _captureSession = [[AVCaptureSession alloc] init];
+    NSLog(@"###: instantiating capture session...");
 
-  _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
+  //_captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
+    
+    
+
+       // 1. Get a list of available devices:
+       // specifying AVMediaTypeVideo will ensure we only get a list of cameras, no microphones
+       NSArray * devices = [ AVCaptureDevice devicesWithMediaType: AVMediaTypeVideo ];
+
+       // 2. Iterate through the device array and if a device is a camera, check if it's the one we want:
+       for ( AVCaptureDevice * device in devices )
+       {
+           if ([cameraName isEqual: @"1"]  && AVCaptureDevicePositionFront == [ device position ] )
+           {    NSLog(@"###: asked for the front camera...");
+               // We asked for the front camera and got the front camera, now keep a pointer to it:
+               _captureDevice = device;
+           }
+           else if ([cameraName isEqual: @"0"] && AVCaptureDevicePositionBack == [ device position ] )
+           {
+               NSLog(@"###: asked for the back camera...");
+               // We asked for the back camera and here it is:
+               _captureDevice = device;
+           }
+       }
+    
+    
+    NSLog(@"###: instantiating capture device...");
+  
+    //Checking if the camera is granted (AVMediaTypeAudio : to verif if micro permission is granted/AVMediaTypeVideo:to check Video)
+    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if (authStatus == AVAuthorizationStatusAuthorized) {
+          NSLog(@"###: Authorization");
+          
+      }
+      else if (authStatus == AVAuthorizationStatusDenied || authStatus == AVAuthorizationStatusRestricted) {
+          NSLog(@"###: Status denied or restricted");
+      }
+      else {
+          NSLog(@"###: Unauthorization");
+          
+      }
+
   NSError *localError = nil;
-  _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
-                                                             error:&localError];
+  _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:&localError];
   if (localError) {
     *error = localError;
+      NSLog(@"###: capture video input error: %@...",localError.userInfo);
     return nil;
   }
 
@@ -931,6 +977,13 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
     result(reply);
   } else if ([@"initialize" isEqualToString:call.method]) {
+      NSLog(@"cameraName: %@", call.arguments[@"cameraName"]);
+      //NSLog(@"%@", call.arguments[@"resolutionPreset"]);
+      //NSLog(@"%@", call.arguments[@"enableAudio"]);
+      //NSLog(@"%@", call.arguments[@"flashMode"]);
+      //NSLog(@"%@", call.arguments[@"enableAutoExposure"]);
+      //NSLog(@"%@", call.arguments[@"autoFocusEnabled"]);
+      
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
     NSNumber *enableAudio = call.arguments[@"enableAudio"];
@@ -948,6 +1001,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                        dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
+        NSLog(@"Error Error Error Error %@ %@",error.userInfo,error);
       result(getFlutterError(error));
     } else {
       if (_camera) {
