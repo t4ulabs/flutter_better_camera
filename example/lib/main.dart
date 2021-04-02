@@ -10,6 +10,7 @@ Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     cameras = await availableCameras();
+    
   } on CameraException catch (e) {
     //logError(e.code, e.description);
   }

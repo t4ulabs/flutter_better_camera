@@ -13,7 +13,6 @@ import 'enums/enum.dart';
 import './camera_record_button.dart';
 import 'option_button.dart';
 import 'dart:async';
-
 import 'single_touch_recognizer/single_touch_recognizer_widget.dart';
 
 class CameraHome extends StatefulWidget {
@@ -293,7 +292,6 @@ class _CameraHomeState extends State<CameraHome> with WidgetsBindingObserver {
 
   /// Toggle Flash
   Future<void> onFlashButtonPressed() async {
-    //bool hasFlash = false;
     if (flashMode == FlashMode.off ) {
       // Turn on the flash for capture
       flashMode = FlashMode.torch;
@@ -562,7 +560,6 @@ class _CameraHomeState extends State<CameraHome> with WidgetsBindingObserver {
     cameraRecordingstate = CameraRecordingstate.Init;
     if(timer!= null) timer.cancel();
     if(videoController != null){
-      //stopVideoRecording();
       videoController = null;
       imagePath = null;
     }
@@ -608,42 +605,3 @@ SvgPicture _getFlashIcon(FlashMode flashMode) {
   }
 }
 
-/*
-Column(
-              children: <Widget>[
-                CaptureControlRowWidget(
-                  cameraController: controller,
-                  flashMode: flashMode,
-                  onFlashButtonPressed: onFlashButtonPressed,
-                  onPauseButtonPressed: onPauseButtonPressed,
-                  onResumeButtonPressed: onResumeButtonPressed,
-                  onStopButtonPressed: onStopButtonPressed,
-                  onTakePictureButtonPressed: onTakePictureButtonPressed,
-                  onVideoRecordButtonPressed: onVideoRecordButtonPressed,
-                  toogleAutoFocus: toogleAutoFocus,
-                ),
-                ToggleAudioWidget(
-                  enableAudio: enableAudio,
-                  onchanched: (bool value) {
-                    enableAudio = value;
-                    if (controller != null) {
-                      onNewCameraSelected(controller.description);
-                    }
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      CameraToggleRowWidget(
-                        cameraController: controller,
-                        cameras: cameras,
-                        onNewCameraSelected: onNewCameraSelected,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            */
