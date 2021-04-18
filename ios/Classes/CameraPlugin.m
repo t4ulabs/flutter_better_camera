@@ -656,7 +656,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
   _eventSink = nil;
   // need to unregister stream handler when disposing the camera
-  [_eventChannel setStreamHandler:nil];
+  //[_eventChannel setStreamHandler:nil];
   return nil;
 }
 
