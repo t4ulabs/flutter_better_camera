@@ -59,7 +59,12 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           if (camera != null) {
             camera.close();
           }
-          cameraPermissions.requestPermissions(
+          try {
+            instantiateCamera(call, result);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+         /* cameraPermissions.requestPermissions(
               activity,
               permissionsRegistry,
               call.argument("enableAudio"),
@@ -73,7 +78,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
                 } else {
                   result.error(errCode, errDesc, null);
                 }
-              });
+              });*/
 
           break;
         }
