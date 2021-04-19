@@ -62,7 +62,8 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           try {
             instantiateCamera(call, result);
           } catch (Exception e) {
-            handleException(e, result);
+            //handleException(e, result);
+            
           }
          /* cameraPermissions.requestPermissions(
               activity,
