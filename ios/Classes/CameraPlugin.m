@@ -162,7 +162,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)();
 @property BOOL enableAudio;
-@property int flashMode;
+@property (nonatomic) int flashMode;
 @property BOOL enableAutoExposure;
 @property BOOL autoFocusEnabled;
 @property(nonatomic) FlutterEventChannel *eventChannel;
@@ -343,13 +343,13 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if (_resolutionPreset == max) {
     [settings setHighResolutionPhotoEnabled:YES];
   }
-
-  if(_flashMode == 1){
+    
+  if(_flashMode == 0){
     [settings setFlashMode:AVCaptureFlashModeOn];
-  } else if(_flashMode == 0) {
-      [settings setFlashMode:AVCaptureFlashModeOff];
-  } else if(_flashMode == 3) {
+  } else if(_flashMode == 2) {
       [settings setFlashMode:AVCaptureFlashModeAuto];
+  } else if(_flashMode == 3) {
+      [settings setFlashMode:AVCaptureFlashModeOff];
   }
     
   [_capturePhotoOutput
@@ -817,6 +817,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 
 
+
 - (BOOL)setupWriterForPath:(NSString *)path {
   NSError *error = nil;
   NSURL *outputURL;
@@ -947,6 +948,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   });
 }
 
+
+
 - (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"availableCameras" isEqualToString:call.method]) {
     AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
@@ -980,7 +983,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       NSLog(@"cameraName: %@", call.arguments[@"cameraName"]);
       //NSLog(@"%@", call.arguments[@"resolutionPreset"]);
       //NSLog(@"%@", call.arguments[@"enableAudio"]);
-      //NSLog(@"%@", call.arguments[@"flashMode"]);
+      NSLog(@"###: flash in init camera   %@", call.arguments[@"flashMode"]);
       //NSLog(@"%@", call.arguments[@"enableAutoExposure"]);
       //NSLog(@"%@", call.arguments[@"autoFocusEnabled"]);
       
@@ -1044,7 +1047,62 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
        result([NSNumber numberWithBool:[_camera hasFlash]]);
   } else if ([@"setFlashMode" isEqualToString:call.method]) {
     NSNumber *flashMode = call.arguments[@"flashMode"];
-    [_camera setFlashMode:[flashMode intValue]];
+      NSLog(@"###: FLASH MODE %@",flashMode);
+      int myInteger = [flashMode integerValue];
+      if(myInteger == 2){
+          NSLog(@"OPEN FLASH");
+          double torchLevel = 0.9;
+          AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+          if ([device hasTorch]) {
+              NSLog(@"###:111111111111");
+              [device lockForConfiguration:nil];
+              NSLog(@"###:22222222222");
+              if (torchLevel <= 0.0) {
+                  [device setTorchMode:AVCaptureTorchModeOff];
+                  NSLog(@"###:3333333333");
+              }
+              else {
+                  if (torchLevel >= 1.0)
+                  {torchLevel = AVCaptureMaxAvailableTorchLevel;
+                      NSLog(@"###:444444444444");
+                  }
+                  BOOL success = [device setTorchModeOnWithLevel:torchLevel   error:nil];
+                  NSLog(@"###:5555555555555");
+                  NSLog(@"###: open torche state  %d",success);
+              }
+              NSLog(@"###: torch level  %ld",(long)torchLevel);
+              [device unlockForConfiguration];
+              NSLog(@"###:666666666666");
+          }
+      }
+      else{
+          NSLog(@"###:00000000000");
+          double torchLevel = 0.0;
+          AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+          if ([device hasTorch]) {
+              NSLog(@"###:111111111111");
+              [device lockForConfiguration:nil];
+              NSLog(@"###:22222222222");
+              if (torchLevel <= 0.0) {
+                  [device setTorchMode:AVCaptureTorchModeOff];
+                  NSLog(@"###:3333333333");
+              }
+              else {
+                  if (torchLevel >= 1.0)
+                  {torchLevel = AVCaptureMaxAvailableTorchLevel;
+                      NSLog(@"###:444444444444");
+                  }
+                  BOOL success = [device setTorchModeOnWithLevel:torchLevel   error:nil];
+                  NSLog(@"###:5555555555555");
+                  NSLog(@"###: open torche state  %d",success);
+              }
+              NSLog(@"###: torch level  %ld",(long)torchLevel);
+              [device unlockForConfiguration];
+              NSLog(@"###:666666666666");
+          }
+          [_camera setFlashMode:[flashMode intValue]];
+      }
+    
     result(nil);
   }  else if ([@"autoExposureOn" isEqualToString:call.method]) {
     [_camera setAutoExposureMode:true];
