@@ -1103,7 +1103,7 @@ public class Camera {
     final int sensorOrientationOffset =
         (currentOrientation == ORIENTATION_UNKNOWN)
             ? 0
-            : (isFrontFacing) ? -currentOrientation : currentOrientation;
+            : (isFrontFacing) ? currentOrientation : currentOrientation;
     return (sensorOrientationOffset + sensorOrientation + 360) % 360;
   }
 }
