@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class BottomBarWidget extends StatelessWidget {
-
   final String leftImagePath;
   final Function onTapLeftImage;
   final bool isDisabledRightButton;
@@ -31,32 +30,29 @@ class BottomBarWidget extends StatelessWidget {
             child: Container(
               height: 64,
               decoration: BoxDecoration(
-                color: Color(0xff000000),
+                color: Color.fromARGB(255, 233, 56, 56),
               ),
             ),
           ),
           Container(
-            padding: EdgeInsets.only(left: 30.0, right: 30.0, top: 13.0),
-            child: 
-                 Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                          onTap: onTapLeftImage,
-                          child: SvgPicture.asset(
-                            leftImagePath,
-                          )),
-                      GestureDetector(
-                        onTap: isDisabledRightButton ? null : onTapRightImage,
-                        child: SvgPicture.asset(rightImagePath,
-                            color: isDisabledRightButton
-                                ? Colors.white.withOpacity(0.36)
-                                : Colors.white),
-                      ),
-                    ],
-                  )
-                
-          ),
+              padding: EdgeInsets.only(left: 30.0, right: 30.0, top: 13.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                      onTap: onTapLeftImage,
+                      child: SvgPicture.asset(
+                        leftImagePath,
+                      )),
+                  GestureDetector(
+                    onTap: isDisabledRightButton ? null : onTapRightImage,
+                    child: SvgPicture.asset(rightImagePath,
+                        color: isDisabledRightButton
+                            ? Colors.white.withOpacity(0.36)
+                            : Colors.white),
+                  ),
+                ],
+              )),
         ],
       ),
     );
